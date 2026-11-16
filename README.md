@@ -20,6 +20,22 @@ Markdown では次のように書く。
 pandoc input.md --lua-filter drawio-filter.lua -o output.pdf
 ```
 
+## ebnf-filter
+
+`` ```ebnf `` のコードブロックを Typst で色分けする。Typst 0.15 には EBNF の構文定義が同梱されていない。また、作業ディレクトリの外にあるファイルは読めない。
+
+フィルタは自分の場所から 2 つ上のディレクトリにある `syntaxes/ebnf.sublime-syntax` を探す。Pandoc のユーザデータディレクトリに置いたときは `%APPDATA%\pandoc\syntaxes\ebnf.sublime-syntax` になる。見つかれば作業ディレクトリへ `ebnf.sublime-syntax` としてコピーし、出力が Typst のときだけ文書の先頭に次を入れる。
+
+```typst
+#set raw(syntaxes: "ebnf.sublime-syntax")
+```
+
+`` ```ebnf `` が文書にないときは何もしない。定義が見つからない、またはコピーできないときは標準エラーへ書いて文書は変えない。Typst 以外の出力ではコピーだけ行い、設定は入れない。コピーは文書につき 1 回。
+
+```text
+pandoc input.md --lua-filter ebnf-filter.lua --pdf-engine=typst -o output.pdf
+```
+
 ## インストール
 
 Pandoc はフィルタ名だけを渡すと `%APPDATA%\pandoc\filters`（通常は `C:\Users\<ユーザー>\AppData\Roaming\pandoc\filters`）を探す。コピーではなくリンクにしておくと、このリポジトリの更新がそのまま使われる。
